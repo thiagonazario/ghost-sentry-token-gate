@@ -23,12 +23,32 @@ Ghost Sentry acts as a sovereign middleware between your application and the AI 
 
 ```mermaid
 graph TD
-    A[Application / Agent] -->|Request| B(🛡️ Ghost Sentry Proxy)
-    B -->|Check Budget/Limit| C{Limit Exceeded?}
-    C -->|Yes| D[🚫 Kill Process & Alert CTO]
-    C -->|No| E[☁️ AI Provider API]
-    E -->|Tokens| B
-    B -->|Response + Cost Log| A
+    %% Define o Estilo dos Nós
+    classDef bunker fill:#000,stroke:#0f0,stroke-width:2px,color:#0f0;
+    classDef cloud fill:#222,stroke:#0af,stroke-width:1px,color:#fff;
+    classDef warning fill:#400,stroke:#f00,stroke-width:1px,color:#f00;
+
+    subgraph User_Environment [Local Infrastructure]
+        A[Ghost Sentry CLI]:::bunker
+    end
+
+    subgraph Cloud_Gateway [The Filter]
+        B{Traffic Shaper}:::cloud
+        C[Cost Circuit Breaker]:::warning
+    end
+
+    subgraph Cloud_Providers [Multi-Cloud Edge]
+        D[AWS API]:::cloud
+        E[GCP API]:::cloud
+    end
+
+    %% Fluxo de Dados
+    A -->|Authenticated Request| B
+    B -->|Check Quota| C
+    C -->|If Safe| D
+    C -->|If Safe| E
+    C -.->|If Limit Exceeded| F((TERMINATE SESSION)):::warning
+```
 
 🚀 Why Ghost Sentry?
 In the DevSecOps Standards, security isn't just about preventing hacks—it's about financial and operational stability. Ghost Sentry is part of the Hardened by Design philosophy: build it safe, or don't build it at all.
