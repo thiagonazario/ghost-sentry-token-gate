@@ -23,22 +23,22 @@ Ghost Sentry acts as a sovereign middleware between your application and the AI 
 
 ```mermaid
 flowchart TD
-    CLI["🖥️ Local Infrastructure<br/><b>Ghost Sentry Core</b>"]
-    CLI -->|"Request Execution"| Shaper
+    CLI["🖥️ Local App<br/><b>Ghost Sentry</b>"]
+    CLI -->|"Request"| Shaper
 
     subgraph Gatekeeper ["🛡️ The Gatekeeper"]
         Shaper["Traffic & Cost<br/>Shaper"]
         Quota["Check Token<br/>Quota"]
-        Breaker["⚠️ Cost Circuit<br/>Breaker"]
+        Breaker["⚠️ Circuit<br/>Breaker"]
         
         Shaper --> Quota --> Breaker
     end
 
-    Breaker -->|"Within Budget"| Safe
-    Breaker -->|"Limit Exceeded"| Kill
+    Breaker -->|"Safe"| Safe
+    Breaker -->|"Exceeded"| Kill
 
-    subgraph Providers ["☁️ AI Providers & Edge"]
-        Safe["OpenAI / Anthropic<br/>AWS Bedrock"]
+    subgraph Providers ["☁️ LLM Providers"]
+        Safe["OpenAI<br/>Anthropic<br/>Bedrock"]
     end
 
     Kill["🛑 TERMINATE<br/>SESSION"]
