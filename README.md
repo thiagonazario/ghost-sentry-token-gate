@@ -22,31 +22,33 @@ Ghost Sentry acts as a sovereign middleware between your application and the AI 
 ## 🏗️ Architecture Blueprint (Mermaid)
 
 ```mermaid
+```mermaid
 flowchart TD
-    subgraph Local ["Local Infrastructure"]
-        CLI["Ghost Sentry Core / CLI"]
-    end
+    CLI["🖥️ Local Infrastructure<br/><b>Ghost Sentry Core</b>"]
+    CLI -->|"Request Execution"| Shaper
 
-    CLI -->|"Request Execution"| Filter
-
-    subgraph TheFilter ["The Gatekeeper"]
-        Shaper{"Traffic & Cost Shaper"}
-        Quota["Check Token Quota"]
-        Shaper --> Quota
-        Breaker["Cost Circuit Breaker"]
-        Quota --> Breaker
+    subgraph Gatekeeper ["🛡️ The Gatekeeper"]
+        Shaper["Traffic & Cost<br/>Shaper"]
+        Quota["Check Token<br/>Quota"]
+        Breaker["⚠️ Cost Circuit<br/>Breaker"]
+        
+        Shaper --> Quota --> Breaker
     end
 
     Breaker -->|"Within Budget"| Safe
-    Breaker -->|"Exceeded Budget"| Kill["TERMINATE SESSION"]
+    Breaker -->|"Limit Exceeded"| Kill
 
-    subgraph Providers ["AI Providers & Edge"]
-        Safe["OpenAI / Anthropic / Bedrock"]
+    subgraph Providers ["☁️ AI Providers & Edge"]
+        Safe["OpenAI / Anthropic<br/>AWS Bedrock"]
     end
 
-    style Breaker fill:#8b0000,stroke:#ff0000,stroke-width:2px,color:#fff
-    style Kill fill:#b22222,stroke:#ff4500,stroke-width:2px,color:#fff
-    style CLI fill:#006400,stroke:#00ff00,stroke-width:2px,color:#fff
+    Kill["🛑 TERMINATE<br/>SESSION"]
+
+    style Breaker fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#fff
+    style Kill fill:#991b1b,stroke:#f87171,stroke-width:2px,color:#fff
+    style CLI fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff
+    style Gatekeeper fill:#1e293b,stroke:#475569,stroke-width:1px,color:#fff
+    style Providers fill:#1e293b,stroke:#475569,stroke-width:1px,color:#fff
 ```
 
 🚀 Why Ghost Sentry?
