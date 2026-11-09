@@ -22,7 +22,6 @@ Ghost Sentry acts as a sovereign middleware between your application and the AI 
 ## 🏗️ Architecture Blueprint (Mermaid)
 
 ```mermaid
-```mermaid
 flowchart TD
     CLI["🖥️ Local Infrastructure<br/><b>Ghost Sentry Core</b>"]
     CLI -->|"Request Execution"| Shaper
