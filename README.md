@@ -22,35 +22,46 @@ Ghost Sentry acts as a sovereign middleware between your application and the AI 
 ## 🏗️ Architecture Blueprint (Mermaid)
 
 ```mermaid
-graph TD
-    %% Define o Estilo dos Nós
-    classDef bunker fill:#000,stroke:#0f0,stroke-width:2px,color:#0f0;
-    classDef cloud fill:#222,stroke:#0af,stroke-width:1px,color:#fff;
-    classDef warning fill:#400,stroke:#f00,stroke-width:1px,color:#f00;
-
-    subgraph User_Environment [Local Infrastructure]
-        A[Ghost Sentry CLI]:::bunker
+flowchart TD
+    subgraph Local ["Local Infrastructure"]
+        CLI["Ghost Sentry Core / CLI"]
     end
 
-    subgraph Cloud_Gateway [The Filter]
-        B{Traffic Shaper}:::cloud
-        C[Cost Circuit Breaker]:::warning
+    CLI -->|"Request Execution"| Filter
+
+    subgraph TheFilter ["The Gatekeeper"]
+        Shaper{"Traffic & Cost Shaper"}
+        Quota["Check Token Quota"]
+        Shaper --> Quota
+        Breaker["Cost Circuit Breaker"]
+        Quota --> Breaker
     end
 
-    subgraph Cloud_Providers [Multi-Cloud Edge]
-        D[AWS API]:::cloud
-        E[GCP API]:::cloud
+    Breaker -->|"Within Budget"| Safe
+    Breaker -->|"Exceeded Budget"| Kill["TERMINATE SESSION"]
+
+    subgraph Providers ["AI Providers & Edge"]
+        Safe["OpenAI / Anthropic / Bedrock"]
     end
 
-    %% Fluxo de Dados
-    A -->|Authenticated Request| B
-    B -->|Check Quota| C
-    C -->|If Safe| D
-    C -->|If Safe| E
-    C -.->|If Limit Exceeded| F((TERMINATE SESSION)):::warning
+    style Breaker fill:#8b0000,stroke:#ff0000,stroke-width:2px,color:#fff
+    style Kill fill:#b22222,stroke:#ff4500,stroke-width:2px,color:#fff
+    style CLI fill:#006400,stroke:#00ff00,stroke-width:2px,color:#fff
 ```
 
 🚀 Why Ghost Sentry?
 In the DevSecOps Standards, security isn't just about preventing hacks—it's about financial and operational stability. Ghost Sentry is part of the Hardened by Design philosophy: build it safe, or don't build it at all.
 
+## 🧪 Quickstart & Testing
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run resilience test suite
+pytest tests/
+
+# Run simulation
+python main.py
+```
 Crafted by: [Thiago Nazario/Ghost Architect]
